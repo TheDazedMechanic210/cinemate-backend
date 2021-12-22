@@ -66,6 +66,6 @@ async function makeRequest(route, body,authHeader) {
   async function getMovie(){
     var token = localStorage.getItem("token");
     const auth = "Bearer "+token;
-  await fetch("/api/user-content",{method:"GET",headers:{Authorization:auth}});
+    await fetch("/api/user-content",{method:"GET",headers:{Authorization:auth}});
   }
 

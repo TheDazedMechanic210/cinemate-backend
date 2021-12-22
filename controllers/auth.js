@@ -17,11 +17,11 @@ exports.signup = (req, res) => {
             user.save((err, user) => {
                 if (!err) {
                     result.status = status;
-                    result.result = user;
+                    result.message = "Your signup was successful. Go to Login Page";
                 } else {
                     status = 500;
                     result.status = status;
-                    result.error = err;
+                    result.message = err;
                 }
                 res.status(status).send(result);
             });
@@ -52,18 +52,19 @@ exports.signin = (req, res) => {
                         if (match) {
                             status = 200;
                             const payload = { userid: user.username };
-                            const options = { expiresIn: "2d" };
+                            const options = { expiresIn: "8d" };
                             const secret = config.secret;
                             console.log(secret);
                             var token = jwt.sign( payload, secret, options );
                             result.status = status;
-                            result.result = user;
+                            result.message = "You have successfully logged in. You will be redirected to your user-page";
                             result.token = token;
+                            result.username = user.username;
                         }
                         else {
                             status = 401;
                             result.status = status;
-                            result.error = "Passwords didn't match";
+                            result.errorMessage = "Passwords didn't match";
                         }
                         res.status(status).send(result);
                     }).catch(err => {
