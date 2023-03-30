@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt")
 const config = require("../config/config");
 const jwt = require("jsonwebtoken")
 
-const mongoUrl = "mongodb+srv://dazedmechanic210:mongoosetrial210@cluster0.67gtn.mongodb.net/cinemate?retryWrites=true&w=majority";
+const mongoUrl = process.env.MONGO_URL;
 exports.signup = (req, res) => {
 
     mongoose.connect(mongoUrl, { useNewUrlParser: true }, (err) => {

@@ -10,31 +10,31 @@ const matchmaker = require("./controllers/matchAlgo")
 const chatController = require("./controllers/chatController")
 const chat = require("./models/chats")
 const jwt = require("jsonwebtoken")
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
-
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   }
 
 });
-
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST"],
 
 }
-
 app.use(cors(corsOptions))
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
+
+app.get("/",(req,res)=>{
+    res.send("Backend Live")
+})
 
 app.get("/api/user-content", usercontent.sendData);
 
