@@ -4,24 +4,21 @@ const movieList = require("../models/movieList")
 const config = require("../config/config");
 const jwt = require("jsonwebtoken")
 
-const mongoUrl = "mongodb+srv://dazedmechanic210:mongoosetrial210@cluster0.67gtn.mongodb.net/cinemate?retryWrites=true&w=majority";
+exports.sendData = (req, res) => {
 
-exports.sendData = (req,res) =>{
 
-    mongoose.connect(mongoUrl,{useNewUrlParser:true},(err)=>{
+    var token = req.headers.authorization;
+    var auth = token.split(" ")[1];
 
-        var token = req.headers.authorization;
-        var auth = token.split(" ")[1];
-        
-        var decoded = jwt.verify(auth,config.secret,(err,decoded)=>{
+    var decoded = jwt.verify(auth, config.secret, (err, decoded) => {
 
-            const username = decoded.userid;
-            movieList.findOne({username:username},(err,userList)=>{
-                res.send(userList)
+        const username = decoded.userid;
+        movieList.findOne({ username: username }, (err, userList) => {
+            res.send(userList)
 
-            })
-        });
+        })
+    });
 
-    })
-  
+
+
 }

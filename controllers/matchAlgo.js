@@ -5,62 +5,58 @@ const jwt = require("jsonwebtoken")
 
 const mongoUrl = "mongodb+srv://dazedmechanic210:mongoosetrial210@cluster0.67gtn.mongodb.net/cinemate?retryWrites=true&w=majority";
 
-exports.matchMaker =  (req,res) => {
+exports.matchMaker = (req, res) => {
 
-    mongoose.connect(mongoUrl,{useNewUrlParser:true},(err)=>{
+    var token = req.headers.authorization;
+    var auth = token.split(" ")[1];
+    let matchArray = [];
+    var decoded = jwt.verify(auth, config.secret, (err, decoded) => {
 
-        var token = req.headers.authorization;
-        var auth = token.split(" ")[1];
-        let matchArray=[];
-        var decoded = jwt.verify(auth,config.secret,(err,decoded)=>{
+        const username = decoded.userid;
 
-            const username = decoded.userid;
+        movieList.findOne({ username: username }, async (err, userList) => {
 
-            movieList.findOne({username:username},async(err,userList)=>{
-                    
-                const userMovieList = userList.movieList;
+            const userMovieList = userList.movieList;
 
-               for await (const doc of movieList.find()){
+            for await (const doc of movieList.find()) {
 
-                if(doc.username==username){
+                if (doc.username == username) {
                     continue;
                 }
 
                 let matchProfile = {}
                 const otherList = doc.movieList;
-               let matchRating = await compatibilityCalc(userMovieList,otherList)
+                let matchRating = await compatibilityCalc(userMovieList, otherList)
 
                 matchProfile.percentage = matchRating
                 matchProfile.user = doc.username
                 matchArray.push(matchProfile);
-                
-               }
-               res.send(matchArray);
 
-            })
-
+            }
+            res.send(matchArray);
 
         })
-            
-        
-    });
 
-    async function compatibilityCalc(userList, otherList)
-    {
+
+    })
+
+
+
+    async function compatibilityCalc(userList, otherList) {
         let userCount = 0;
         let matchCount = 0;
         let ratingMatch = 0;
         userList.forEach(element => {
-            userCount +=1;
+            userCount += 1;
             otherList.forEach(otherElement => {
-                if(element.movie==otherElement.movie){
+                if (element.movie == otherElement.movie) {
 
-                    if(element.rating > 2 && otherElement.rating > 2){
+                    if (element.rating > 2 && otherElement.rating > 2) {
 
-                        matchCount +=1;
+                        matchCount += 1;
                         let perdiff;
                         let diffRating = Math.abs(element.rating - otherElement.rating);
-                        switch (diffRating){
+                        switch (diffRating) {
                             case 2:
                                 perdiff = 25;
                                 break;
@@ -78,14 +74,15 @@ exports.matchMaker =  (req,res) => {
                 }
             })
         });
-        if(ratingMatch==0){
+        if (ratingMatch == 0) {
             ratingMatch = 0;
             console.log("yes")
         }
-        else{
-            ratingMatch = (ratingMatch/matchCount)*((matchCount)/userCount);
+        else {
+            ratingMatch = (ratingMatch / matchCount) * ((matchCount) / userCount);
 
         }
         return ratingMatch;
-        
-    }}
+
+    }
+}

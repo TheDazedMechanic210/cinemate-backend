@@ -26,14 +26,22 @@ const corsOptions = {
   methods: ["GET", "POST"],
 
 }
-app.use(cors(corsOptions))
 
+const mongoUrl = process.env.MONGO_URL;
+
+mongoose.connect(mongoUrl,{useNewUrlParser:true},(err)=>{
+  if(!err){
+    console.log("Database Connected");
+  }
+})
+
+app.use(cors(corsOptions))
 app.use(express.static(__dirname + '/public'));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
-app.get("/",(req,res)=>{
-    res.send("Backend Live")
+app.get("/", (req, res) => {
+  res.send("Backend Live")
 })
 
 app.get("/api/user-content", usercontent.sendData);
@@ -46,9 +54,9 @@ app.post("/api/user", content.addMovie);
 
 app.get("/api/matchmaker", matchmaker.matchMaker);
 
-app.get("/api/chat",chatController.fetchChat)
+app.get("/api/chat", chatController.fetchChat)
 
-app.post("/api/chat",chatController.updateChat)
+app.post("/api/chat", chatController.updateChat)
 
 server.listen(PORT, (req, res) => {
   console.log(`Server is running on port ${PORT}.`);
